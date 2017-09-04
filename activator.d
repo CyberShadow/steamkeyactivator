@@ -1,5 +1,8 @@
+import core.thread;
+
 import std.algorithm.searching;
 import std.array;
+import std.datetime.systime;
 import std.file;
 import std.json;
 import std.net.curl;
@@ -34,7 +37,28 @@ void main()
 	foreach (key; steamKeys)
 	{
 		writeln(key);
-		auto result = cachedPost("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key ~ "&sessionid=" ~ sessionID);
-		writeln("\t", cast(string)result);
+		StdTime epoch = 0;
+		while (true)
+		{
+			auto res = cachedPost("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key ~ "&sessionid=" ~ sessionID, epoch);
+			writeln("\t", cast(string)res);
+			auto j = parseJSON(cast(string)res);
+			auto code = j["purchase_result_details"].integer;
+			switch (code)
+			{
+				case 9:
+					writeln("\t", "Already activated");
+					break;
+				case 53:
+					writeln("\t", "Throttled, waiting...");
+					Thread.sleep(1.minutes);
+					epoch = Clock.currStdTime;
+					continue;
+				default:
+					writeln("\t", "Unknown code: ", code);
+					break;
+			}
+			break;
+		}
 	}
 }
