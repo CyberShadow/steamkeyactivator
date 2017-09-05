@@ -2,6 +2,7 @@ import core.thread;
 
 import std.algorithm.searching;
 import std.array;
+import std.conv;
 import std.datetime.systime;
 import std.file;
 import std.json;
@@ -46,17 +47,19 @@ void main()
 			auto code = j["purchase_result_details"].integer;
 			switch (code)
 			{
+				case 0:
+					writeln("\t", "Activated successfully!");
+					break;
 				case 9:
-					writeln("\t", "Already activated");
+					writeln("\t", "Already have this product");
 					break;
 				case 53:
 					writeln("\t", "Throttled, waiting...");
-					Thread.sleep(1.minutes);
+					Thread.sleep(5.minutes);
 					epoch = Clock.currStdTime;
 					continue;
 				default:
-					writeln("\t", "Unknown code: ", code);
-					break;
+					throw new Exception("Unknown code: " ~ text(code));
 			}
 			break;
 		}
