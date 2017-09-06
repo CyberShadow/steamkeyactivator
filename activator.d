@@ -67,7 +67,7 @@ void activateSteamKeys(string[] steamKeys)
 
 	foreach (key; steamKeys)
 	{
-		writeln(key);
+		writeln("Activating Steam key: ", key);
 		StdTime epoch = 0;
 		while (true)
 		{
