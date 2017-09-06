@@ -13,6 +13,8 @@ import std.string;
 
 import ae.sys.file;
 import ae.utils.digest;
+import ae.utils.funopt;
+import ae.utils.main;
 import ae.utils.regex;
 import ae.utils.time;
 
@@ -77,7 +79,20 @@ void activateSteamKeys(string[] steamKeys)
 	}
 }
 
-void main()
+struct Activator
 {
-	activateHBKeys(readText("hbkeys.txt").splitLines);
+static:
+	@(`Activate Steam keys from HumbleBundle product keys from file`)
+	void hbKeys(string fileName)
+	{
+		activateHBKeys(readText(fileName).splitLines);
+	}
+
+	@(`Activate Steam keys from file`)
+	void steamKeys(string fileName)
+	{
+		activateSteamKeys(readText(fileName).splitLines);
+	}
 }
+
+mixin main!(funoptDispatch!Activator);
