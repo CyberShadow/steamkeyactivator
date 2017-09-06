@@ -4,6 +4,7 @@ import std.conv;
 import std.file;
 import std.net.curl;
 import std.path;
+import std.stdio;
 import std.string;
 
 import ae.sys.file;
@@ -11,7 +12,9 @@ import ae.sys.paths;
 import ae.utils.digest;
 import ae.utils.time : StdTime;
 
-static HTTP http;
+bool verbose;
+
+private static HTTP http;
 static this() { http = HTTP(); }
 
 /*private*/ void req(string url, HTTP.Method method, const(void)[] data, string target)
@@ -44,6 +47,8 @@ private ubyte[] cachedReq(string url, HTTP.Method method, in void[] data, StdTim
 {
 	auto hash = getDigestString!MD5(url ~ data);
 	auto path = buildPath("cache", hash);
+	if (verbose)
+	 	stderr.writefln!"\t%s %s => %s"(method, url, hash);
 	ensurePathExists(path);
 	if (path.exists && path.timeLastModified.stdTime < epoch)
 		path.remove();

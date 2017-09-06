@@ -21,8 +21,6 @@ import ae.utils.time;
 
 import net;
 
-bool verbose;
-
 void activateHBProducts()
 {
 	auto hbKeys =
@@ -130,7 +128,7 @@ void activator(
 	immutable(string)[] actionArguments = null,
 )
 {
-	http.verbose = .verbose = verbose;
+	net.verbose = verbose;
 
 	static void usageFun(string usage)
 	{
