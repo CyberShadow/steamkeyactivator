@@ -1,3 +1,4 @@
+import core.runtime;
 import core.thread;
 
 import std.algorithm.searching;
@@ -20,6 +21,8 @@ import ae.utils.time;
 
 import net;
 
+bool verbose;
+
 void activateHBProducts()
 {
 	auto hbKeys =
@@ -37,15 +40,19 @@ void activateHBKeys(string[] hbKeys)
 	string[] steamKeys;
 	foreach (hbKey; hbKeys)
 	{
-		writeln(hbKey);
+		writeln("Fetching Steam keys for HB product key: ", hbKey);
 		auto res = cachedGet(cast(string)("https://www.humblebundle.com/api/v1/order/" ~ hbKey ~ "?all_tpkds=true"));
+		if (verbose) writeln("\t", cast(string)res);
 		auto j = parseJSON(cast(string)res);
 		foreach (tpk; j["tpkd_dict"]["all_tpks"].array)
 			if (tpk["key_type"].str == "steam" && "redeemed_key_val" in tpk.object)
 			{
 				auto steamKey = tpk["redeemed_key_val"].str;
 				if (!steamKey.canFind("<a href"))
+				{
+					writeln("\t", "Found Steam key: ", steamKey);
 					steamKeys ~= steamKey;
+				}
 			}
 	}
 
@@ -67,7 +74,7 @@ void activateSteamKeys(string[] steamKeys)
 		while (true)
 		{
 			auto res = cachedPost("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key ~ "&sessionid=" ~ sessionID, epoch);
-			writeln("\t", cast(string)res);
+			if (verbose) writeln("\t", cast(string)res);
 			auto j = parseJSON(cast(string)res);
 			auto code = j["purchase_result_details"].integer;
 			switch (code)
@@ -117,4 +124,28 @@ static:
 	}
 }
 
-mixin main!(funoptDispatch!Activator);
+void activator(
+	bool verbose,
+	Parameter!(string, "Action to perform (see list below)") action = null,
+	immutable(string)[] actionArguments = null,
+)
+{
+	http.verbose = .verbose = verbose;
+
+	static void usageFun(string usage)
+	{
+		if (usage.canFind("ACTION [ACTION-ARGUMENTS]"))
+		{
+			stderr.writefln!"%-(%s\n%)\n"(
+				getUsageFormatString!activator.format(Runtime.args[0]).splitLines() ~
+				usage.splitLines()[1..$]
+			);
+		}
+		else
+			stderr.writeln(usage);
+	}
+
+	return funoptDispatch!(Activator, FunOptConfig.init, usageFun)([thisExePath] ~ (action ? [action.value] ~ actionArguments : []));
+}
+
+mixin main!(funopt!activator);
