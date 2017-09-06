@@ -12,6 +12,7 @@ import std.stdio;
 
 import ae.sys.file;
 import ae.utils.digest;
+import ae.utils.regex;
 import ae.utils.time;
 
 import net;
@@ -33,7 +34,11 @@ void main()
 			}
 	}
 
-	auto sessionID = readText("sessionid.txt");
+	auto sessionID =
+		(cast(string)cachedGet("https://store.steampowered.com/account/registerkey"))
+		.extractCapture(re!`var g_sessionID = "([^"]*)";`)
+		.front;
+	writeln("Got Steam session ID: ", sessionID);
 
 	foreach (key; steamKeys)
 	{
