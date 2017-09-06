@@ -9,6 +9,7 @@ import std.json;
 import std.net.curl;
 import std.path;
 import std.stdio;
+import std.string;
 
 import ae.sys.file;
 import ae.utils.digest;
@@ -17,10 +18,10 @@ import ae.utils.time;
 
 import net;
 
-void main()
+void activateHBKeys(string[] hbKeys)
 {
 	string[] steamKeys;
-	foreach (hbKey; File("hbkeys.txt").byLine)
+	foreach (hbKey; hbKeys)
 	{
 		writeln(hbKey);
 		auto res = cachedGet(cast(string)("https://www.humblebundle.com/api/v1/order/" ~ hbKey ~ "?all_tpkds=true"));
@@ -34,6 +35,11 @@ void main()
 			}
 	}
 
+	activateSteamKeys(steamKeys);
+}
+
+void activateSteamKeys(string[] steamKeys)
+{
 	auto sessionID =
 		(cast(string)cachedGet("https://store.steampowered.com/account/registerkey"))
 		.extractCapture(re!`var g_sessionID = "([^"]*)";`)
@@ -69,4 +75,9 @@ void main()
 			break;
 		}
 	}
+}
+
+void main()
+{
+	activateHBKeys(readText("hbkeys.txt").splitLines);
 }
