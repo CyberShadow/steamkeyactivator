@@ -4,7 +4,7 @@ import std.conv;
 import std.file;
 import std.net.curl;
 import std.path;
-import std.stdio;
+import std.stdio : stderr;
 import std.string;
 
 import ae.sys.file;

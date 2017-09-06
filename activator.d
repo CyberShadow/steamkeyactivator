@@ -9,7 +9,7 @@ import std.file;
 import std.json;
 import std.net.curl;
 import std.path;
-import std.stdio;
+import std.stdio : stderr;
 import std.string;
 
 import ae.sys.file;
@@ -28,7 +28,7 @@ void activateHBProducts()
 		.extractCapture(re!`var gamekeys =  (\[[^\]]*\]);`)
 		.front
 		.to!(string[]);
-	writefln("Got %d HumbleBundle keys", hbKeys.length);
+	stderr.writefln!"Got %d HumbleBundle keys"(hbKeys.length);
 
 	activateHBKeys(hbKeys);
 }
@@ -38,9 +38,9 @@ void activateHBKeys(string[] hbKeys)
 	string[] steamKeys;
 	foreach (hbKey; hbKeys)
 	{
-		writeln("Fetching Steam keys for HB product key: ", hbKey);
+		stderr.writeln("Fetching Steam keys for HB product key: ", hbKey);
 		auto res = cachedGet(cast(string)("https://www.humblebundle.com/api/v1/order/" ~ hbKey ~ "?all_tpkds=true"));
-		if (verbose) writeln("\t", cast(string)res);
+		if (verbose) stderr.writeln("\t", cast(string)res);
 		auto j = parseJSON(cast(string)res);
 		foreach (tpk; j["tpkd_dict"]["all_tpks"].array)
 			if (tpk["key_type"].str == "steam" && "redeemed_key_val" in tpk.object)
@@ -48,7 +48,7 @@ void activateHBKeys(string[] hbKeys)
 				auto steamKey = tpk["redeemed_key_val"].str;
 				if (!steamKey.canFind("<a href"))
 				{
-					writeln("\t", "Found Steam key: ", steamKey);
+					stderr.writeln("\t", "Found Steam key: ", steamKey);
 					steamKeys ~= steamKey;
 				}
 			}
@@ -63,28 +63,28 @@ void activateSteamKeys(string[] steamKeys)
 		(cast(string)cachedGet("https://store.steampowered.com/account/registerkey"))
 		.extractCapture(re!`var g_sessionID = "([^"]*)";`)
 		.front;
-	writeln("Got Steam session ID: ", sessionID);
+	stderr.writeln("Got Steam session ID: ", sessionID);
 
 	foreach (key; steamKeys)
 	{
-		writeln("Activating Steam key: ", key);
+		stderr.writeln("Activating Steam key: ", key);
 		StdTime epoch = 0;
 		while (true)
 		{
 			auto res = cachedPost("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key ~ "&sessionid=" ~ sessionID, epoch);
-			if (verbose) writeln("\t", cast(string)res);
+			if (verbose) stderr.writeln("\t", cast(string)res);
 			auto j = parseJSON(cast(string)res);
 			auto code = j["purchase_result_details"].integer;
 			switch (code)
 			{
 				case 0:
-					writeln("\t", "Activated successfully!");
+					stderr.writeln("\t", "Activated successfully!");
 					break;
 				case 9:
-					writeln("\t", "Already have this product");
+					stderr.writeln("\t", "Already have this product");
 					break;
 				case 53:
-					writeln("\t", "Throttled, waiting...");
+					stderr.writeln("\t", "Throttled, waiting...");
 					Thread.sleep(5.minutes);
 					epoch = Clock.currStdTime;
 					continue;
