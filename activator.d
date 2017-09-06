@@ -1,6 +1,7 @@
 import core.runtime;
 import core.thread;
 
+import std.algorithm.iteration;
 import std.algorithm.searching;
 import std.array;
 import std.conv;
@@ -33,9 +34,17 @@ void activateHBProducts()
 	activateHBKeys(hbKeys);
 }
 
+struct SteamKey
+{
+	string key;
+	string name;
+
+	string toString() { return name ? format!"%s (%s)"(key, name) : key; }
+}
+
 void activateHBKeys(string[] hbKeys)
 {
-	string[] steamKeys;
+	SteamKey[] steamKeys;
 	foreach (hbKey; hbKeys)
 	{
 		stderr.writeln("Fetching Steam keys for HB product key: ", hbKey);
@@ -49,7 +58,7 @@ void activateHBKeys(string[] hbKeys)
 				if (!steamKey.canFind("<a href"))
 				{
 					stderr.writeln("\t", "Found Steam key: ", steamKey);
-					steamKeys ~= steamKey;
+					steamKeys ~= SteamKey(steamKey, "human_name" in tpk ? tpk["human_name"].str : null);
 				}
 			}
 	}
@@ -57,7 +66,7 @@ void activateHBKeys(string[] hbKeys)
 	activateSteamKeys(steamKeys);
 }
 
-void activateSteamKeys(string[] steamKeys)
+void activateSteamKeys(SteamKey[] steamKeys)
 {
 	auto sessionID =
 		(cast(string)cachedGet("https://store.steampowered.com/account/registerkey"))
@@ -71,7 +80,7 @@ void activateSteamKeys(string[] steamKeys)
 		StdTime epoch = 0;
 		while (true)
 		{
-			auto res = cachedPost("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key ~ "&sessionid=" ~ sessionID, epoch);
+			auto res = cachedPost("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key.key ~ "&sessionid=" ~ sessionID, epoch);
 			if (verbose) stderr.writeln("\t", cast(string)res);
 			auto j = parseJSON(cast(string)res);
 			auto code = j["purchase_result_details"].integer;
@@ -118,7 +127,7 @@ static:
 		Parameter!(string, "Text file containing Steam keys, one per line") fileName
 	)
 	{
-		activateSteamKeys(readText(fileName).splitLines);
+		activateSteamKeys(readText(fileName).splitLines.map!(line => SteamKey(line)).array);
 	}
 }
 
