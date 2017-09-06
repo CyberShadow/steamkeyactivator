@@ -38,7 +38,9 @@ Log in sessions may expire after a few days, so you may need to repeat the above
 
 # Cache
 
-To prevent redoing previous work, this program will aggressively cache all requests to Steam and HumbleBundle.
+To prevent redoing previous work, this program will aggressively cache all requests to Steam and HumbleBundle. Delete the `cache/` directory to force the program to re-check for new keys.
+
+In addition to the cache, the program will save a report of key activations to the file `results.txt`, and will skip over keys listed in that file.
 
 # Notes
 

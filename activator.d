@@ -10,8 +10,9 @@ import std.file;
 import std.json;
 import std.net.curl;
 import std.path;
-import std.stdio : stderr;
+import std.stdio : stderr, File;
 import std.string;
+import std.typecons;
 
 import ae.sys.file;
 import ae.utils.digest;
@@ -74,9 +75,20 @@ void activateSteamKeys(SteamKey[] steamKeys)
 		.front;
 	stderr.writeln("Got Steam session ID: ", sessionID);
 
+	enum resultFile = "results.txt";
+	string[][] results;
+	if (resultFile.exists)
+		results = resultFile.readText.splitLines.map!(s => s.split("\t")).array;
+
 	foreach (key; steamKeys)
 	{
 		stderr.writeln("Activating Steam key: ", key);
+		if (results.canFind!(result => result[0] == key.key))
+		{
+			stderr.writeln("\t", "Already activated (", results.find!(result => result[0] == key.key).front[1], ")");
+			continue;
+		}
+
 		StdTime epoch = 0;
 		while (true)
 		{
@@ -88,9 +100,11 @@ void activateSteamKeys(SteamKey[] steamKeys)
 			{
 				case 0:
 					stderr.writeln("\t", "Activated successfully!");
+					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Activated", key.name);
 					break;
 				case 9:
 					stderr.writeln("\t", "Already have this product");
+					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Already owned", key.name);
 					break;
 				case 53:
 					stderr.writeln("\t", "Throttled, waiting...");
