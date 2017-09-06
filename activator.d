@@ -20,6 +20,18 @@ import ae.utils.time;
 
 import net;
 
+void activateHBProducts()
+{
+	auto hbKeys =
+		(cast(string)cachedGet("https://www.humblebundle.com/home/keys"))
+		.extractCapture(re!`var gamekeys =  (\[[^\]]*\]);`)
+		.front
+		.to!(string[]);
+	writefln("Got %d HumbleBundle keys", hbKeys.length);
+
+	activateHBKeys(hbKeys);
+}
+
 void activateHBKeys(string[] hbKeys)
 {
 	string[] steamKeys;
@@ -82,14 +94,24 @@ void activateSteamKeys(string[] steamKeys)
 struct Activator
 {
 static:
+	@(`Activate all Steam keys from your HumbleBundle library`)
+	void humbleBundle()
+	{
+		activateHBProducts();
+	}
+
 	@(`Activate Steam keys from HumbleBundle product keys from file`)
-	void hbKeys(string fileName)
+	void hbKeys(
+		Parameter!(string, "Text file containing HumbleBundle product keys, one per line") fileName
+	)
 	{
 		activateHBKeys(readText(fileName).splitLines);
 	}
 
 	@(`Activate Steam keys from file`)
-	void steamKeys(string fileName)
+	void steamKeys(
+		Parameter!(string, "Text file containing Steam keys, one per line") fileName
+	)
 	{
 		activateSteamKeys(readText(fileName).splitLines);
 	}
