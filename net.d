@@ -19,7 +19,7 @@ static this() { http = HTTP(); }
 
 /*private*/ void req(string url, HTTP.Method method, const(void)[] data, string target)
 {
-	http.verbose = true;
+	http.verbose = verbose;
 	http.method = method;
 
 	http.clearRequestHeaders();
