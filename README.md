@@ -1,7 +1,9 @@
-steamkeyactivator
-=================
+Steam Key Activator
+===================
 
-# Usage
+Activates your Steam keys from HumbleBundle on Steam.
+
+## Usage
 
 ```
 Usage: activator [--verbose] [ACTION] [ACTION-ARGUMENTS]...
@@ -15,7 +17,7 @@ Actions:
   steam-keys     Activate Steam keys from file
 ```
 
-# Configuration
+## Configuration
 
 To allow the program to access your Steam and HumbleBundle accounts, you must export your cookies from said websites from your web browser.
 
@@ -36,19 +38,19 @@ Instructions:
 
 Log in sessions may expire after a few days, so you may need to repeat the above steps should the program stop working.
 
-# Cache
+## Cache
 
 To prevent redoing previous work, this program will aggressively cache all requests to Steam and HumbleBundle. Delete the `cache/` directory to force the program to re-check for new keys.
 
 In addition to the cache, the program will save a report of key activations to the file `results.txt`, and will skip over keys listed in that file.
 
-# Notes
+## Notes
 
 * Steam's key activation is severely throttled. After 10 unsuccessful key activations, no keys can be activated for an hour. This program will keep retrying until the cooldown expires, however activating a lot of keys may take up to several days.
 
 * This program will not redeem unredeemed Steam keys from your HumbleBundle library. If you wish to redeem all Steam keys, you must first go through https://www.humblebundle.com/home/keys and click on all "Activate on Steam" buttons yourself. This must be done manually because this action is not undoable, and precludes gifting the game key using HumbleBundle's website to someone else.
 
-# Troubleshooting
+## Troubleshooting
 
 * Run the program with the `--verbose` switch to enable verbose mode. This will show details for all HTTP requests.
 
