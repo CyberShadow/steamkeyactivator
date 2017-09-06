@@ -46,9 +46,9 @@ struct SteamKey
 void activateHBKeys(string[] hbKeys)
 {
 	SteamKey[] steamKeys;
-	foreach (hbKey; hbKeys)
+	foreach (n, hbKey; hbKeys)
 	{
-		stderr.writeln("Fetching Steam keys for HB product key: ", hbKey);
+		stderr.writefln!"[%d/%d] Fetching Steam keys for HB product key: %s"(n+1, hbKeys.length, hbKey);
 		auto res = cachedGet(cast(string)("https://www.humblebundle.com/api/v1/order/" ~ hbKey ~ "?all_tpkds=true"));
 		if (verbose) stderr.writeln("\t", cast(string)res);
 		auto j = parseJSON(cast(string)res);
@@ -80,9 +80,9 @@ void activateSteamKeys(SteamKey[] steamKeys)
 	if (resultFile.exists)
 		results = resultFile.readText.splitLines.map!(s => s.split("\t")).array;
 
-	foreach (key; steamKeys)
+	foreach (n, key; steamKeys)
 	{
-		stderr.writeln("Activating Steam key: ", key);
+		stderr.writefln!"[%d/%d] Activating Steam key: %s"(n+1, steamKeys.length, key);
 		if (results.canFind!(result => result[0] == key.key))
 		{
 			stderr.writeln("\t", "Already activated (", results.find!(result => result[0] == key.key).front[1], ")");
