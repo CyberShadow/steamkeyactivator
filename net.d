@@ -4,6 +4,7 @@ import std.conv;
 import std.file;
 import std.net.curl;
 import std.path;
+import std.string;
 
 import ae.sys.file;
 import ae.sys.paths;
@@ -20,9 +21,8 @@ static this() { http = HTTP(); }
 
 	http.clearRequestHeaders();
 	auto host = url.split("/")[2];
-	auto cookiePath = buildPath("cookies", host);
-	if (cookiePath.exists)
-		http.addRequestHeader("Cookie", cookiePath.readText);
+	auto cookiePath = buildPath("cookies", host ~ ".txt");
+	http.addRequestHeader("Cookie", cookiePath.readText.strip);
 
 	if (data)
 	{
