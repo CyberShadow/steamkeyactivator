@@ -17,6 +17,26 @@ Actions:
   steam-keys     Activate Steam keys from file
 ```
 
+## Building
+
+1. Install [DMD](https://dlang.org/download.html) and [Dub](http://code.dlang.org/download):
+
+   - Windows: Download and run the [installer](https://dlang.org/download.html)
+
+   - macOS:
+
+         brew install dmd dub
+
+   - Arch Linux:
+
+         pacaur -S dmd dub
+
+   - Anything else:
+
+         curl -fsS https://dlang.org/install.sh | bash -s dmd
+
+2. Run `dub build`.
+
 ## Configuration
 
 To allow the program to access your Steam and HumbleBundle accounts, you must export your cookies from said websites from your web browser.
