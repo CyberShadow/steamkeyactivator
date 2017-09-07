@@ -1,5 +1,5 @@
 /activator
 /cache/
-/cookies/
+/cookies/*.txt
 /results.txt
 /.dub/
