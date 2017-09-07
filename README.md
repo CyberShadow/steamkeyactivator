@@ -11,6 +11,8 @@ Works on Windows / Linux / macOS.
 
 ## Usage
 
+#### Synopsis:
+
 ```
 Usage: activator [--verbose] [ACTION] [ACTION-ARGUMENTS]...
 
@@ -22,6 +24,18 @@ Actions:
   hb-keys        Activate Steam keys from HumbleBundle product keys from file
   steam-keys     Activate Steam keys from file
 ```
+
+#### To activate all Steam keys from your HumbleBundle account:
+
+1. Visit [your HumbleBundle keys page](https://www.humblebundle.com/home/keys) and claim any unclaimed Steam keys you wish to activate (see [Notes](#notes) below)
+2. Follow the [configuration instructions](#configuration) below
+3. Run `./activator humble-bundle`
+
+#### To activate a list of Steam keys:
+
+1. Create a text file, and paste your Steam keys in it (one key per line, and nothing else)
+2. Follow the [configuration instructions](#configuration) below (you can skip the HumbleBundle configuration)
+3. Run `./activator steam-keys path/to/your/steam-key-list.txt`
 
 ## Building
 
@@ -74,7 +88,7 @@ In addition to the cache, the program will save a report of key activations to t
 
 * Steam's key activation is severely throttled. After 10 unsuccessful key activations, no keys can be activated for an hour. This program will keep retrying until the cooldown expires, however activating a lot of keys may take up to several days.
 
-* This program will not redeem unredeemed Steam keys from your HumbleBundle library. If you wish to redeem all Steam keys, you must first go through https://www.humblebundle.com/home/keys and click on all "Activate on Steam" buttons yourself. This must be done manually because this action is not undoable, and precludes gifting the game key using HumbleBundle's website to someone else.
+* This program will not claim unclaimed Steam keys from your HumbleBundle library. If you wish to claim all Steam keys, you must first go through https://www.humblebundle.com/home/keys and click on all "Activate on Steam" buttons yourself. This must be done manually because this action is not undoable, and precludes gifting the game key using HumbleBundle's website to someone else.
 
 ## Troubleshooting
 
