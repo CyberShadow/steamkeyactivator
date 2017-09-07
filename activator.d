@@ -83,9 +83,10 @@ void activateSteamKeys(SteamKey[] steamKeys)
 	foreach (n, key; steamKeys)
 	{
 		stderr.writefln!"[%d/%d] Activating Steam key: %s"(n+1, steamKeys.length, key);
-		if (results.canFind!(result => result[0] == key.key))
+		auto existingResult = results.find!(result => result[0] == key.key);
+		if (!existingResult.empty)
 		{
-			stderr.writeln("\t", "Already activated (", results.find!(result => result[0] == key.key).front[1], ")");
+			stderr.writeln("\t", "Already activated (", existingResult.front[1], ")");
 			continue;
 		}
 
