@@ -1,0 +1,9 @@
+name "activator"
+description "Steam Key Activator"
+authors "Vladimir Panteleev"
+copyright "Copyright © 2017, Vladimir Panteleev"
+license "Boost"
+dependency "ae" version="==0.0.1995"
+
+targetType "executable"
+sourceFiles "activator.d" "net.d"
