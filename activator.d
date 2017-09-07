@@ -107,6 +107,10 @@ void activateSteamKeys(SteamKey[] steamKeys)
 					stderr.writeln("\t", "Already have this product");
 					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Already owned", key.name);
 					break;
+				case 24:
+					stderr.writeln("\t", "Need another product");
+					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Need another", key.name);
+					break;
 				case 53:
 					stderr.writeln("\t", "Throttled, waiting...");
 					Thread.sleep(5.minutes);
