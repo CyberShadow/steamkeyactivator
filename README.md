@@ -1,7 +1,13 @@
 Steam Key Activator
 ===================
 
-Activates your Steam keys from HumbleBundle on Steam.
+Activates your Steam keys in bulk.
+
+Can also query and activate all Steam keys from your HumbleBundle account.
+
+As this uses Steam's new [online key registration form](https://store.steampowered.com/account/registerkey), it does not require a Steam client. 
+
+Works on Windows / Linux / macOS.
 
 ## Usage
 
