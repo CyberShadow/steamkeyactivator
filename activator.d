@@ -15,18 +15,21 @@ import std.string;
 import std.typecons;
 
 import ae.sys.file;
+import ae.sys.net;
+import ae.sys.net.cachedcurl;
 import ae.utils.digest;
 import ae.utils.funopt;
 import ae.utils.main;
 import ae.utils.regex;
 import ae.utils.time;
 
-import net;
+bool verbose;
+CachedCurlNetwork ccnet;
 
 void activateHBProducts()
 {
 	auto hbKeys =
-		(cast(string)cachedGet("https://www.humblebundle.com/home/keys"))
+		(cast(string)getFile("https://www.humblebundle.com/home/keys"))
 		.extractCapture(re!`var gamekeys =  (\[[^\]]*\]);`)
 		.front
 		.to!(string[]);
@@ -49,7 +52,7 @@ void activateHBKeys(string[] hbKeys)
 	foreach (n, hbKey; hbKeys)
 	{
 		stderr.writefln!"[%d/%d] Fetching Steam keys for HB product key: %s"(n+1, hbKeys.length, hbKey);
-		auto res = cachedGet(cast(string)("https://www.humblebundle.com/api/v1/order/" ~ hbKey ~ "?all_tpkds=true"));
+		auto res = getFile(cast(string)("https://www.humblebundle.com/api/v1/order/" ~ hbKey ~ "?all_tpkds=true"));
 		if (verbose) stderr.writeln("\t", cast(string)res);
 		auto j = parseJSON(cast(string)res);
 		foreach (tpk; j["tpkd_dict"]["all_tpks"].array)
@@ -70,7 +73,7 @@ void activateHBKeys(string[] hbKeys)
 void activateSteamKeys(SteamKey[] steamKeys)
 {
 	auto sessionID =
-		(cast(string)cachedGet("https://store.steampowered.com/account/registerkey"))
+		(cast(string)getFile("https://store.steampowered.com/account/registerkey"))
 		.extractCapture(re!`var g_sessionID = "([^"]*)";`)
 		.front;
 	stderr.writeln("Got Steam session ID: ", sessionID);
@@ -90,10 +93,11 @@ void activateSteamKeys(SteamKey[] steamKeys)
 			continue;
 		}
 
-		StdTime epoch = 0;
+		ccnet.epoch = 0;
+		scope(exit) ccnet.epoch = 0;
 		while (true)
 		{
-			auto res = cachedPost("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key.key ~ "&sessionid=" ~ sessionID, epoch);
+			auto res = post("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key.key ~ "&sessionid=" ~ sessionID);
 			if (verbose) stderr.writeln("\t", cast(string)res);
 			auto j = parseJSON(cast(string)res);
 			auto code = j["purchase_result_details"].integer;
@@ -114,7 +118,7 @@ void activateSteamKeys(SteamKey[] steamKeys)
 				case 53:
 					stderr.writeln("\t", "Throttled, waiting...");
 					Thread.sleep(5.minutes);
-					epoch = Clock.currStdTime;
+					ccnet.epoch = Clock.currStdTime;
 					continue;
 				default:
 					throw new Exception("Unknown code: " ~ text(code));
@@ -156,7 +160,8 @@ void activator(
 	immutable(string)[] actionArguments = null,
 )
 {
-	net.verbose = verbose;
+	ccnet = cast(CachedCurlNetwork)net;
+	ccnet.http.verbose = verbose;
 
 	static void usageFun(string usage)
 	{
