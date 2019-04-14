@@ -154,29 +154,25 @@ static:
 	}
 }
 
-void activator(
+void usageFun(string usage)
+{
+	stderr.writeln(usage, funoptDispatchUsage!Activator);
+}
+
+void dispatch(
 	bool verbose,
-	Parameter!(string, "Action to perform (see list below)") action = null,
+	Parameter!(string, "Action to perform (see list below)") action,
 	immutable(string)[] actionArguments = null,
 )
 {
 	ccnet = cast(CachedCurlNetwork)net;
 	ccnet.http.verbose = verbose;
-
-	static void usageFun(string usage)
-	{
-		if (usage.canFind("ACTION [ACTION-ARGUMENTS]"))
-		{
-			stderr.writefln!"%-(%s\n%)\n"(
-				getUsageFormatString!activator.format(Runtime.args[0]).splitLines() ~
-				usage.splitLines()[1..$]
-			);
-		}
-		else
-			stderr.writeln(usage);
-	}
-
-	return funoptDispatch!(Activator, FunOptConfig.init, usageFun)([thisExePath] ~ (action ? [action.value] ~ actionArguments : []));
+	funoptDispatch!Activator([thisExePath, action] ~ actionArguments);
 }
 
-mixin main!(funopt!activator);
+void run(string[] args)
+{
+	funopt!(dispatch, FunOptConfig.init, usageFun)(args);
+}
+
+mixin main!run;
