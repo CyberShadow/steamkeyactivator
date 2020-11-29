@@ -8,7 +8,6 @@ import std.conv;
 import std.datetime.systime;
 import std.file;
 import std.json;
-import std.net.curl;
 import std.path;
 import std.stdio : stderr, File;
 import std.string;
@@ -77,7 +76,7 @@ void activateHBKeys(string[] hbKeys)
 void activateSteamKeys(SteamKey[] steamKeys)
 {
 	auto sessionID =
-		(cast(string)getFile("https://store.steampowered.com/account/registerkey"))
+		(cast(string)ccnet.getFile("https://store.steampowered.com/account/registerkey"))
 		.extractCapture(re!`var g_sessionID = "([^"]*)";`)
 		.front;
 	if (verbose) stderr.writeln("Got Steam session ID: ", sessionID);
@@ -101,7 +100,7 @@ void activateSteamKeys(SteamKey[] steamKeys)
 		scope(exit) ccnet.epoch = 0;
 		while (true)
 		{
-			auto res = post("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key.key ~ "&sessionid=" ~ sessionID);
+			auto res = ccnet.post("https://store.steampowered.com/account/ajaxregisterkey/", "product_key=" ~ key.key ~ "&sessionid=" ~ sessionID);
 			if (verbose) stderr.writeln("\t", cast(string)res);
 			auto j = parseJSON(cast(string)res);
 			auto code = j["purchase_result_details"].integer;
