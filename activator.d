@@ -80,7 +80,7 @@ void activateSteamKeys(SteamKey[] steamKeys)
 		(cast(string)getFile("https://store.steampowered.com/account/registerkey"))
 		.extractCapture(re!`var g_sessionID = "([^"]*)";`)
 		.front;
-	stderr.writeln("Got Steam session ID: ", sessionID);
+	if (verbose) stderr.writeln("Got Steam session ID: ", sessionID);
 
 	enum resultFile = "results.txt";
 	string[][] results;
