@@ -46,7 +46,7 @@ struct SteamKey
 	string key;
 	string name;
 
-	string toString() { return name ? format!"%s (%s)"(key, name) : key; }
+	string toString() const { return name ? format!"%s (%s)"(key, name) : key; }
 }
 
 void activateHBKeys(string[] hbKeys)
