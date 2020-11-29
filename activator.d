@@ -28,12 +28,15 @@ CachedCurlNetwork ccnet;
 
 void activateHBProducts()
 {
-	scope(failure) stderr.writeln("Error extracting Humble Bundle keys array. Make sure you are logged in and your cookies file is up to date.");
-	auto hbKeys =
-		(cast(string)ccnet.getFile("https://www.humblebundle.com/home/keys"))
-		.extractCapture(re!`"gamekeys": (\[[^\]]*\]), `)
-		.front
-		.to!(string[]);
+	string[] hbKeys;
+	{
+		scope(failure) stderr.writeln("Error extracting Humble Bundle keys array. Make sure you are logged in and your cookies file is up to date.");
+		hbKeys =
+			(cast(string)ccnet.getFile("https://www.humblebundle.com/home/keys"))
+			.extractCapture(re!`"gamekeys": (\[[^\]]*\]), `)
+			.front
+			.to!(string[]);
+	}
 	stderr.writefln!"Got %d HumbleBundle keys"(hbKeys.length);
 
 	activateHBKeys(hbKeys);
