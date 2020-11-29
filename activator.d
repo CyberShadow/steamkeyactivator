@@ -170,7 +170,7 @@ void dispatch(
 )
 {
 	ccnet = cast(CachedCurlNetwork)net;
-	ccnet.http.verbose = verbose;
+	ccnet.http.verbose = .verbose = verbose;
 	ccnet.cookieDir = "cookies";
 	ccnet.cookieExt = ".txt";
 	funoptDispatch!Activator([thisExePath, action] ~ actionArguments);
