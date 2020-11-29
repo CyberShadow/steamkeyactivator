@@ -30,7 +30,7 @@ void activateHBProducts()
 {
 	scope(failure) stderr.writeln("Error extracting Humble Bundle keys array. Make sure you are logged in and your cookies file is up to date.");
 	auto hbKeys =
-		(cast(string)getFile("https://www.humblebundle.com/home/keys"))
+		(cast(string)ccnet.getFile("https://www.humblebundle.com/home/keys"))
 		.extractCapture(re!`var gamekeys =  (\[[^\]]*\]);`)
 		.front
 		.to!(string[]);
@@ -168,6 +168,8 @@ void dispatch(
 {
 	ccnet = cast(CachedCurlNetwork)net;
 	ccnet.http.verbose = verbose;
+	ccnet.cookieDir = "cookies";
+	ccnet.cookieExt = ".txt";
 	funoptDispatch!Activator([thisExePath, action] ~ actionArguments);
 }
 
