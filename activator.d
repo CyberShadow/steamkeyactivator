@@ -120,7 +120,7 @@ void activateSteamKeys(SteamKey[] steamKeys)
 					break;
 				case 15:
 					stderr.writeln("\t", "Key associated with other account");
-					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Key in-use eleswhere", key.name);
+					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Key in-use elsewhere", key.name);
 					break;
 				case 24:
 					stderr.writeln("\t", "Need another product");
