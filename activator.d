@@ -114,6 +114,10 @@ void activateSteamKeys(SteamKey[] steamKeys)
 					stderr.writeln("\t", "Already have this product");
 					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Already owned", key.name);
 					break;
+				case 14:
+					stderr.writeln("\t", "Invalid key");
+					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Invalid key", key.name);
+					break;
 				case 24:
 					stderr.writeln("\t", "Need another product");
 					File(resultFile, "a").writefln!"%s\t%s\t%s"(key.key, "Need another", key.name);
